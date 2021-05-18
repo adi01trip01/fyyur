@@ -18,8 +18,6 @@ from flask_migrate import Migrate
 from models import *
 from flask_wtf.csrf import CSRFProtect
 
-
-
 # ----------------------------------------------------------------------------#
 # App Config.
 # ----------------------------------------------------------------------------#
@@ -30,7 +28,6 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 # TODO: connect to a local postgresql database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://myuser:mypass@localhost:5432/fyyur'
 
 
 # ----------------------------------------------------------------------------#
@@ -206,21 +203,22 @@ def create_venue_submission():
     return render_template("pages/home.html")
 
 
-@app.route('/venues/<venue_id>', methods=['DELETE'])
+@app.route('/venues/<venue_id>/delete', methods=['POST', 'GET', 'DELETE'])
 def delete_venue(venue_id):
     # DONE: Complete this endpoint for taking a venue_id, and using
     # SQLAlchemy ORM to delete a record. Handle cases where the session commit could fail.
-    try:
-        venue = Venue.query.filter_by(id=venue_id).first()
-        db.session.delete(venue)
-        db.session.commit()
-    except:
-        db.session.rollback()
-        db.session.close()
 
-    # BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
-    # clicking that button delete it from the db then redirect the user to the homepage
+    venue = Venue.query.filter_by(id=venue_id).first()
+
+    db.session.delete(venue)
+    db.session.commit()
+    flash('Record Deleted Successfully')
+
     return redirect(url_for("index"))
+
+
+# BONUS CHALLENGE: Implement a button to delete a Venue on a Venue Page, have it so that
+# clicking that button delete it from the db then redirect the user to the homepage
 
 
 #  Artists
@@ -338,8 +336,8 @@ def edit_artist_submission(artist_id):
     # TODO: take values from the form submitted, and update existing
     form = ArtistForm()
 
-    artist = Artist.query.filter_by(id=artist_id).first()
-
+    # artist = Artist.query.filter_by(id=artist_id)
+    artist = Artist.query.get(artist_id)
     artist.name = form.name.data
     artist.genres = form.genres.data
     artist.city = form.city.data
@@ -347,9 +345,9 @@ def edit_artist_submission(artist_id):
     artist.phone = form.phone.data
     artist.website_link = form.website_link.data
     artist.facebook_link = form.facebook_link.data
-
-    db.session.add(artist)
+    db.session.merge(artist)
     db.session.commit()
+    flash("Record Updated Successfully!")
     return redirect(url_for('show_artist', artist_id=artist_id))
 
 
@@ -387,8 +385,9 @@ def edit_venue_submission(venue_id):
     venue.website_link = form.website_link.data
     venue.facebook_link = form.facebook_link.data
 
-    db.session.add(venue)
+    db.session.merge(venue)
     db.session.commit()
+    flash("Record Updated Successfully!")
     return redirect(url_for('show_venue', venue_id=venue_id))
 
 
