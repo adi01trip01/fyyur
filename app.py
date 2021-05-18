@@ -15,7 +15,7 @@ from flask_wtf import Form
 from forms import *
 import psycopg2
 from flask_migrate import Migrate
-from models import *
+
 from flask_wtf.csrf import CSRFProtect
 
 # ----------------------------------------------------------------------------#
@@ -29,7 +29,7 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 # TODO: connect to a local postgresql database
 
-
+from models import Shows, Artist, Venue
 # ----------------------------------------------------------------------------#
 # Filters.
 # ----------------------------------------------------------------------------#
