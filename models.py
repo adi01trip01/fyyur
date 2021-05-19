@@ -1,5 +1,6 @@
 from app import db
 from datetime import datetime
+
 # ----------------------------------------------------------------------------#
 # Models.
 # ----------------------------------------------------------------------------#
@@ -50,6 +51,5 @@ class Artist(db.Model):
     facebook_link = db.Column(db.String(120))
     venues = db.relationship("Venue", secondary=Shows, backref="Artist", lazy=True)
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
-
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.

@@ -1,11 +1,19 @@
 # ----------------------------------------------------------------------------#
 # Imports
 # ----------------------------------------------------------------------------#
-
+from models import *
 import sys
 import dateutil.parser
 import babel
-from flask import Flask, render_template, request, Response, flash, redirect, url_for
+from flask import (
+    Flask,
+    render_template,
+    request,
+    Response,
+    flash,
+    redirect,
+    url_for
+)
 from flask_moment import Moment
 from flask_sqlalchemy import SQLAlchemy
 import logging
@@ -22,8 +30,9 @@ moment = Moment(app)
 app.config.from_object('config')
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+
+
 # TODO: connect to a local postgresql database
-from models import *
 
 
 # ----------------------------------------------------------------------------#
@@ -68,7 +77,6 @@ def venues():
                                              Shows.c.venue_id == venue.id).all())
                 data = []
                 for i in Venue.query.filter_by(city=venue.city, state=venue.state).all():
-                    print(i)
                     data.append({"id": i.id, "name": i.name, "num_upcoming_shows": upcoming_shows})
                 record.append({"city": venue.city, "state": venue.state, "venues": data})
     except Exception as e:
@@ -101,6 +109,9 @@ def show_venue(venue_id):
     try:
         venue_f = Venue.query.filter_by(id=venue_id).first()
         list_shows = db.session.query(Shows).filter(Shows.c.venue_id == venue_f.id).all()
+        list_show2 = db.session.query(Shows, Venue).select_from(Shows).join(Venue). \
+            filter(Shows.c.venue_id == venue_f.id).all()
+        print(list_show2)
         artist_up_show = []
         artist_past_show = []
         for show in list_shows:
@@ -121,6 +132,7 @@ def show_venue(venue_id):
                    "past_shows": artist_past_show, "past_shows_count": len(artist_past_show)}
     except Exception as e:
         sys.exit(e)
+
     return render_template("pages/show_venue.html", venue=records)
 
 
@@ -171,7 +183,6 @@ def create_venue_submission():
         flash("An error occurred. Venue " +
               venue_data.get('name') + " could not be listed.")
         db.session.flush()
-        print(e)
     return render_template("pages/home.html")
 
 
@@ -277,6 +288,9 @@ def show_artist(artist_id):
         "past_shows_count": len(venue_past_shows),
 
     }
+    data['genres'] = list(data.get('genres'))
+    data['genres'].remove('{')
+    data['genres'].remove('}')
     return render_template("pages/show_artist.html", artist=data)
 
 
@@ -399,7 +413,6 @@ def create_artist_submission():
               artist.name + " could not be listed.")
         # TODO: on unsuccessful db insert, flash an error instead.
         # e.g., flash('An error occurred. Artist ' + data.name + ' could not be listed.')
-        print(e)
     return render_template("pages/home.html")
 
 
