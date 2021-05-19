@@ -1,10 +1,10 @@
-from app import db
+from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
 # ----------------------------------------------------------------------------#
 # Models.
 # ----------------------------------------------------------------------------#
-
+db = SQLAlchemy()
 
 Shows = db.Table("Shows",
                  db.Column("id", db.Integer, primary_key=True),
@@ -29,8 +29,8 @@ class Venue(db.Model):
     seeking_description = db.Column(db.String())
     website_link = db.Column(db.String(500))
     artists = db.relationship("Artist", secondary=Shows,
-                              backref=db.backref('Venue',
-                                                 cascade="all,delete"), lazy=True)
+                             backref=db.backref('Venue',
+                                                 cascade="all,delete"), lazy='joined')
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
@@ -49,7 +49,7 @@ class Artist(db.Model):
     image_link = db.Column(db.String(500))
     website_link = db.Column(db.String(500))
     facebook_link = db.Column(db.String(120))
-    venues = db.relationship("Venue", secondary=Shows, backref="Artist", lazy=True)
+    venues = db.relationship("Venue", secondary=Shows, backref="Artist", lazy='joined')
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.

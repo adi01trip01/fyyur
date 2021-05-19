@@ -108,10 +108,10 @@ def show_venue(venue_id):
     # TODO: replace with real venue data from the venues table, using venue_id
     try:
         venue_f = Venue.query.filter_by(id=venue_id).first()
-        list_shows = db.session.query(Shows).filter(Shows.c.venue_id == venue_f.id).all()
-        list_show2 = db.session.query(Shows, Venue).select_from(Shows).join(Venue). \
-            filter(Shows.c.venue_id == venue_f.id).all()
-        print(list_show2)
+        #list_shows = db.session.query(Shows).filter(Shows.c.venue_id == venue_f.id).all()
+        #print(venue_f, list_shows)
+        records = {}
+        list_shows = db.session.query(Shows).join(Venue).filter(Shows.c.venue_id==venue_f.id)
         artist_up_show = []
         artist_past_show = []
         for show in list_shows:
@@ -132,7 +132,6 @@ def show_venue(venue_id):
                    "past_shows": artist_past_show, "past_shows_count": len(artist_past_show)}
     except Exception as e:
         sys.exit(e)
-
     return render_template("pages/show_venue.html", venue=records)
 
 
@@ -249,7 +248,9 @@ def search_artists():
 def show_artist(artist_id):
     # shows the artist page with the given artist_id
     # TODO: replace with real artist data from the artist table, using artist_id
-    shows = db.session.query(Shows).filter(Shows.c.artist_id == artist_id).all()
+    # shows = db.session.query(Shows).filter(Shows.c.artist_id == artist_id).all()
+    shows = db.session.query(Shows).join(Artist).filter(Shows.c.artist_id == artist_id)
+    # list_shows = db.session.query(Shows).join(Venue).filter(Shows.c.venue_id == venue_f.id)
     venue_past_shows = []
     venue_up_shows = []
     artist = Artist.query.filter_by(id=artist_id).first()
