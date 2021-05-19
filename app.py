@@ -100,7 +100,10 @@ def show_venue(venue_id):
     # TODO: replace with real venue data from the venues table, using venue_id
     try:
         venue_f = Venue.query.filter_by(id=venue_id).first()
-        list_shows = db.session.query(Shows).filter(Shows.c.venue_id == venue_f.id).all()
+        #list_shows = db.session.query(Shows).filter(Shows.c.venue_id == venue_f.id).all()
+        #print(venue_f, list_shows)
+        records = {}
+        list_shows = db.session.query(Shows).join(Venue).filter(Shows.c.venue_id==venue_f.id)
         artist_up_show = []
         artist_past_show = []
         for show in list_shows:
@@ -120,7 +123,7 @@ def show_venue(venue_id):
                    "upcoming_shows": artist_up_show, "upcoming_shows_count": len(artist_up_show),
                    "past_shows": artist_past_show, "past_shows_count": len(artist_past_show)}
     except Exception as e:
-        sys.exit(e)
+        pass
     return render_template("pages/show_venue.html", venue=records)
 
 

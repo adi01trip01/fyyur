@@ -28,8 +28,8 @@ class Venue(db.Model):
     seeking_description = db.Column(db.String())
     website_link = db.Column(db.String(500))
     artists = db.relationship("Artist", secondary=Shows,
-                              backref=db.backref('Venue',
-                                                 cascade="all,delete"), lazy=True)
+                             backref=db.backref('Venue',
+                                                 cascade="all,delete"), lazy='joined')
 
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
